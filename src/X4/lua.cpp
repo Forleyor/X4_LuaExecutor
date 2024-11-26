@@ -1,6 +1,12 @@
 #include "lua.h"
 
+#include <psapi.h>
+
 #include "MinHook.h"
+
+#include "../mem/mem.h"
+
+
 
 namespace Lua
 {
@@ -46,7 +52,13 @@ namespace Lua
 
 	bool HookGame()
 	{
-		GetComponentData_Address= (uintptr_t)GetModuleHandle(NULL) + 0x254B00;
+		MODULEINFO info;
+		BOOL result = GetModuleInformation(GetCurrentProcess(), GetModuleHandle(nullptr), &info, sizeof(info));
+
+		if (!result)
+			printf("Failed to get module info for X4, Lua Executor will not work");
+
+		GetComponentData_Address = (uintptr_t)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 8B C4 48 89 48 ? 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC D8 06 00 00");
 		if (GetComponentData_Address)
 		{
 			if (MH_CreateHook((void*)GetComponentData_Address, (void*)hook_GetComponentData, (void**)&orig_GetComponentData) != MH_OK)

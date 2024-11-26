@@ -172,6 +172,7 @@
     <ClCompile Include="src\console\console.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\hooks\hooks.cpp" />
+    <ClCompile Include="src\mem\mem.cpp" />
     <ClCompile Include="src\menu\Addons\TextEditor.cpp" />
     <ClCompile Include="src\menu\menu.cpp" />
     <ClCompile Include="src\utils\utils.cpp" />
@@ -181,6 +182,7 @@
   <ItemGroup>
     <ClInclude Include="src\console\console.h" />
     <ClInclude Include="src\hooks\hooks.h" />
+    <ClInclude Include="src\mem\mem.h" />
     <ClInclude Include="src\X4\defs.h" />
     <ClInclude Include="src\X4\lua.h" />
     <ClInclude Include="src\menu\Addons\TextEditor.h" />
