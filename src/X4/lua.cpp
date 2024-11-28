@@ -24,7 +24,6 @@ namespace Lua
 	{
 		pThis = orig_LuaInitialize(pThis, a2);
 
-		printf("%s\n", pThis->luaString.c_str());
 		if (strcmp(pThis->luaString.c_str(), "ui/widget/Lua/") == 0)
 		{
 			Menu::x4_LuaState = pThis->luaState;
