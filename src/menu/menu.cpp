@@ -53,10 +53,15 @@ namespace Menu
 		}
 
 		editor.Render("LuaEditor", ImVec2(width, SetHeightPercent(0.45f)), true);
-		if (ig::Button("Execute", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))) && x4_LuaState)
+		if (autoExectute && editor.IsTextChanged() || ig::Button("Execute", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))) && x4_LuaState)
 		{
 			if (_luaL_loadstring(x4_LuaState, editor.GetText().c_str()) == LUA_OK)
 			{
+				if (autoExectute)
+				{
+					console.SetText("");
+				}
+
 				if (_lua_pcall(x4_LuaState, 0, LUA_MULTRET, 0) != LUA_OK)
 				{
 					console.SetText(_lua_tolstring(x4_LuaState, -1, 0));
@@ -67,11 +72,13 @@ namespace Menu
 				console.SetText(_lua_tolstring(x4_LuaState, -1, 0));
 			}
 		}
-		ImGui::SameLine();
+		ig::SameLine();
 		if (ig::Button("Clear Console", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))))
 		{
 			console.SetText("");
 		}
+		ig::SameLine();
+		ig::Checkbox("Auto Execute", &autoExectute);
 
 		console.Render("Console", ImVec2(width, SetHeightPercent(0.45f)), true);
 

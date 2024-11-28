@@ -15,4 +15,5 @@ namespace Menu {
 	inline TextEditor console;
 	inline float width = 1200.0f;
     inline float height = 800.0f;
+    inline bool autoExectute = false;
 } // namespace Menu

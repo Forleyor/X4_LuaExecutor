@@ -30,5 +30,5 @@ namespace Lua
 	bool HookGame();
 	void SetupFunctionPointers();
 
-	static uintptr_t GetComponentData_Address;
+	static uintptr_t LuaInitialize_Address;
 }

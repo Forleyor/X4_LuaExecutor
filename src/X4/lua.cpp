@@ -3,10 +3,14 @@
 #include <psapi.h>
 
 #include "MinHook.h"
-
 #include "../mem/mem.h"
 
-
+struct LuaEngine
+{
+	void* vTable;
+	void* luaState;
+	std::string luaString; // Used to find the correct state via unique string
+};
 
 namespace Lua
 {
@@ -15,20 +19,20 @@ namespace Lua
 		{NULL, NULL} /* end of array */
 	};
 
-	void* (*orig_GetComponentData)(void* L);
-	void* hook_GetComponentData(void* L)
+	LuaEngine* (*orig_LuaInitialize)(LuaEngine *pThis, int a2);
+	LuaEngine* hook_LuaInitialize(LuaEngine *pThis, int a2)
 	{
-		if (!Menu::x4_LuaState)
+		pThis = orig_LuaInitialize(pThis, a2);
+
+		printf("%s\n", pThis->luaString.c_str());
+		if (strcmp(pThis->luaString.c_str(), "ui/widget/Lua/") == 0)
 		{
-			Menu::x4_LuaState = L;
+			Menu::x4_LuaState = pThis->luaState;
 			SetupFunctionPointers();
 			printf("Found x4_LuaState: %p\n", Menu::x4_LuaState);
-			if (MH_DisableHook((void*)Lua::GetComponentData_Address) == MH_OK)
-			{
-				printf("Disabled and GetComponentData() hook success\n");
-			}
 		}
-		return orig_GetComponentData(L);
+
+		return pThis;
 	}
 
 	static int LuaPrintToConsole(void* L)
@@ -57,18 +61,18 @@ namespace Lua
 
 		if (!result)
 			printf("Failed to get module info for X4, Lua Executor will not work");
-
-		GetComponentData_Address = (uintptr_t)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 8B C4 48 89 48 ? 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC D8 06 00 00");
-		if (GetComponentData_Address)
+	
+		LuaInitialize_Address = (uintptr_t)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 ? 57 48 83 EC 50 48 8B F9 48 8D 05");
+		if (LuaInitialize_Address)
 		{
-			if (MH_CreateHook((void*)GetComponentData_Address, (void*)hook_GetComponentData, (void**)&orig_GetComponentData) != MH_OK)
+			if (MH_CreateHook((void*)LuaInitialize_Address, (void*)hook_LuaInitialize, (void**)&orig_LuaInitialize) != MH_OK)
 			{
-				printf("Failed to create hook_GetComponentDatay\n");
+				printf("Failed to create hook_LuaInitializey\n");
 				return false;
 			}
-			if (MH_EnableHook((void*)GetComponentData_Address) != MH_OK)
+			if (MH_EnableHook((void*)LuaInitialize_Address) != MH_OK)
 			{
-				printf("Failed to enable hook_GetComponentData\n");
+				printf("Failed to enable hook_LuaInitialize\n");
 				return false;
 			}
 		}
@@ -78,7 +82,7 @@ namespace Lua
 
 	static void SetupFunctionPointers()
 	{
-		HMODULE luaDLL = GetModuleHandle("lua51_64.dll");
+		HMODULE luaDLL = GetModuleHandle(L"lua51_64.dll");
 		_lua_gettop = (__lua_gettop)GetProcAddress(luaDLL, "lua_gettop");
 		_lua_settop = (__lua_settop)GetProcAddress(luaDLL, "lua_settop");
 		_luaL_loadstring = (__luaL_loadstring)GetProcAddress(luaDLL, "luaL_loadstring");
