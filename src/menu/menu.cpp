@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "menu.h"
-
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 
+#include "menu.h"
+#include "../utils/utils.h"
 #include "../X4/lua.h"
 
 namespace ig = ImGui;
@@ -14,6 +14,14 @@ namespace Menu
 	void InitializeContext(HWND hwnd) {
 		if (ig::GetCurrentContext())
 			return;
+
+		RECT window;
+		GetWindowRect(Utils::GetProcessWindow(), &window);
+		
+		gameWidth = window.right;
+		gameHeight = window.bottom;
+		menuWidth = gameWidth / 2;
+		menuHeight = gameHeight / 2;
 
 		ig::CreateContext();
 		ImGui_ImplWin32_Init(hwnd);
@@ -31,18 +39,19 @@ namespace Menu
 		console.SetColorizerEnable(false);
 		console.SetTabSize(4);
 		console.SetReadOnly(true);
-	}
 
+	}
+	
 	inline float SetHeightPercent(float value)
 	{
-		return height * value;
+		return menuHeight * value;
 	}
 
     void Render() {
         if (!bShowMenu)
             return;
 
-		ig::SetNextWindowSize(ImVec2(width, height), ImGuiCond_FirstUseEver);
+		ig::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_FirstUseEver);
 		ig::Begin("Lua Executor");
 
 		if (HandleWindowResize() == false)
@@ -52,7 +61,7 @@ namespace Menu
 			return;
 		}
 
-		editor.Render("LuaEditor", ImVec2(width, SetHeightPercent(0.45f)), true);
+		editor.Render("LuaEditor", ImVec2(menuWidth, SetHeightPercent(0.45f)), true);
 		if (autoExectute && editor.IsTextChanged() || ig::Button("Execute", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))) && x4_LuaState)
 		{
 			if (_luaL_loadstring(x4_LuaState, editor.GetText().c_str()) == LUA_OK)
@@ -80,7 +89,7 @@ namespace Menu
 		ig::SameLine();
 		ig::Checkbox("Auto Execute", &autoExectute);
 
-		console.Render("Console", ImVec2(width, SetHeightPercent(0.45f)), true);
+		console.Render("Console", ImVec2(menuWidth, SetHeightPercent(0.45f)), true);
 
 		ig::End();
     }
@@ -89,7 +98,7 @@ namespace Menu
 	{
 		ImVec2 view = ImGui::GetContentRegionAvail();
 
-		if (view.x != width || view.y != height)
+		if (view.x != menuWidth || view.y != menuHeight)
 		{
 			if (view.x == 0 || view.y == 0)
 			{
@@ -97,8 +106,8 @@ namespace Menu
 				return false;
 			}
 
-			width = view.x;
-			height = view.y;
+			menuWidth = view.x;
+			menuHeight = view.y;
 
 			//Render();
 

@@ -5,18 +5,20 @@
 #include "MinHook.h"
 #include "../mem/mem.h"
 
-struct LuaEngine
-{
-	void* vTable;
-	void* luaState;
-	std::string luaString; // Used to find the correct state via unique string
-};
+
 
 namespace Lua
 {
 	static const struct luaL_Reg printlib[] = {
 		{"print", LuaPrintToConsole},
 		{NULL, NULL} /* end of array */
+	};
+
+	struct LuaEngine
+	{
+		void* vTable;
+		void* luaState;
+		std::string luaString; // Used to find the correct state via unique string
 	};
 
 	LuaEngine* (*orig_LuaInitialize)(LuaEngine *pThis, int a2);

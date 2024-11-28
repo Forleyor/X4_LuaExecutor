@@ -13,7 +13,9 @@ namespace Menu {
 	inline bool updateConsole = false;
     inline TextEditor editor;
 	inline TextEditor console;
-	inline float width = 1200.0f;
-    inline float height = 800.0f;
+	inline float gameWidth;
+    inline float gameHeight;
+    inline float menuWidth;
+    inline float menuHeight;
     inline bool autoExectute = false;
 } // namespace Menu
