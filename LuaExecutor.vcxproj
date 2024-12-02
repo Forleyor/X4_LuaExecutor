@@ -43,7 +43,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -169,26 +169,26 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\console\console.cpp" />
+    <ClCompile Include="src\utils\console.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\hooks\hooks.cpp" />
-    <ClCompile Include="src\mem\mem.cpp" />
-    <ClCompile Include="src\menu\Addons\TextEditor.cpp" />
-    <ClCompile Include="src\menu\menu.cpp" />
+    <ClCompile Include="src\utils\mem.cpp" />
+    <ClCompile Include="src\X4\menu\Addons\TextEditor.cpp" />
+    <ClCompile Include="src\X4\menu\menu.cpp" />
     <ClCompile Include="src\utils\utils.cpp" />
-    <ClCompile Include="src\vulkan\hook_vulkan.cpp" />
+    <ClCompile Include="src\hooks\hook_vulkan.cpp" />
     <ClCompile Include="src\X4\lua.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\console\console.h" />
+    <ClInclude Include="src\utils\console.h" />
     <ClInclude Include="src\hooks\hooks.h" />
-    <ClInclude Include="src\mem\mem.h" />
+    <ClInclude Include="src\utils\mem.h" />
     <ClInclude Include="src\X4\defs.h" />
     <ClInclude Include="src\X4\lua.h" />
-    <ClInclude Include="src\menu\Addons\TextEditor.h" />
-    <ClInclude Include="src\menu\menu.h" />
+    <ClInclude Include="src\X4\menu\Addons\TextEditor.h" />
+    <ClInclude Include="src\X4\menu\menu.h" />
     <ClInclude Include="src\utils\utils.h" />
-    <ClInclude Include="src\vulkan\hook_vulkan.h" />
+    <ClInclude Include="src\hooks\hook_vulkan.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

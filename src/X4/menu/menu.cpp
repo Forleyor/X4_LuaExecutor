@@ -4,8 +4,8 @@
 #include "imgui_impl_win32.h"
 
 #include "menu.h"
-#include "../utils/utils.h"
-#include "../X4/lua.h"
+#include "../../utils/utils.h"
+#include "../lua.h"
 
 namespace ig = ImGui;
 
@@ -18,8 +18,8 @@ namespace Menu
 		RECT window;
 		GetWindowRect(Utils::GetProcessWindow(), &window);
 		
-		gameWidth = window.right;
-		gameHeight = window.bottom;
+		gameWidth = static_cast<float>(window.right);
+		gameHeight = static_cast<float>(window.bottom);
 		menuWidth = gameWidth / 2;
 		menuHeight = gameHeight / 2;
 
@@ -50,7 +50,7 @@ namespace Menu
     void Render() {
         if (!bShowMenu)
             return;
-
+		
 		ig::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_FirstUseEver);
 		ig::Begin("Lua Executor");
 
@@ -72,7 +72,7 @@ namespace Menu
 				}
 
 				if (_lua_pcall(x4_LuaState, 0, LUA_MULTRET, 0) != LUA_OK)
-				{
+					{
 					console.SetText(_lua_tolstring(x4_LuaState, -1, 0));
 				}
 			}

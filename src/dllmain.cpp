@@ -3,14 +3,14 @@
 #include <iostream>
 #include <thread>
 
-#include "console/console.h"
+#include "utils/console.h"
 
 #include "hooks/hooks.h"
 #include "utils/utils.h"
 
 #include "MinHook.h"
 
-#include "menu/menu.h"
+#include "X4/menu/menu.h"
 #include "X4/lua.h"
 
 DWORD WINAPI OnProcessAttach(LPVOID lpParam);
@@ -39,7 +39,7 @@ DWORD WINAPI OnProcessAttach(LPVOID lpParam) {
 
 	if (!Lua::HookGame())
 	{
-		printf("Failed to hook game process, LuaExecutor.dll will unload");
+		printf("Failed to hook game process, LuaExecutor.dll will unload\n");
 		std::cin.get();
 		Utils::UnloadDLL();
 	}

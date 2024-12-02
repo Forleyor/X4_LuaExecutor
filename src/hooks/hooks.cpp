@@ -3,9 +3,9 @@
 #include <thread>
 
 #include "hooks.h"
-#include "../menu/menu.h"
+#include "hook_vulkan.h"
+#include "../X4/menu/menu.h"
 #include "../utils/utils.h"
-#include "../vulkan/hook_vulkan.h"
 #include "../X4/lua.h"
 
 #include "imgui.h"

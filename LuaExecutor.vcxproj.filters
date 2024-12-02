@@ -18,7 +18,7 @@
     <ClCompile Include="src\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vulkan\hook_vulkan.cpp">
+    <ClCompile Include="src\hooks\hook_vulkan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\hooks\hooks.cpp">
@@ -27,24 +27,24 @@
     <ClCompile Include="src\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\console\console.cpp">
+    <ClCompile Include="src\utils\console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\menu\Addons\TextEditor.cpp">
+    <ClCompile Include="src\X4\menu\Addons\TextEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\menu\menu.cpp">
+    <ClCompile Include="src\X4\menu\menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\X4\lua.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\mem\mem.cpp">
+    <ClCompile Include="src\utils\mem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\vulkan\hook_vulkan.h">
+    <ClInclude Include="src\hooks\hook_vulkan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\hooks\hooks.h">
@@ -53,13 +53,13 @@
     <ClInclude Include="src\utils\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\console\console.h">
+    <ClInclude Include="src\utils\console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\menu\Addons\TextEditor.h">
+    <ClInclude Include="src\X4\menu\Addons\TextEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\menu\menu.h">
+    <ClInclude Include="src\X4\menu\menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\X4\lua.h">
@@ -68,7 +68,7 @@
     <ClInclude Include="src\X4\defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\mem\mem.h">
+    <ClInclude Include="src\utils\mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

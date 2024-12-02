@@ -11,11 +11,11 @@ namespace Menu {
     inline bool bShowMenu = false;
     inline void *x4_LuaState = nullptr;
 	inline bool updateConsole = false;
+    inline bool autoExectute = false;
     inline TextEditor editor;
 	inline TextEditor console;
 	inline float gameWidth;
     inline float gameHeight;
     inline float menuWidth;
     inline float menuHeight;
-    inline bool autoExectute = false;
 } // namespace Menu

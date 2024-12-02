@@ -1,5 +1,3 @@
-//#include "../../../../backend.hpp"
-
 #include <Windows.h>
 
 #include <memory>
@@ -17,7 +15,7 @@
 
 #include "../hooks/hooks.h"
 
-#include "../menu/menu.h"
+#include "../X4/menu/menu.h"
 
 static VkAllocationCallbacks* g_Allocator = NULL;
 static VkInstance g_Instance = VK_NULL_HANDLE;
