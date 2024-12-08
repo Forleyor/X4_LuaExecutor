@@ -14,3 +14,6 @@
 #define LUA_ERRERR	5
 
 #define LUA_MULTRET -1
+
+#define luaL_dostring(L, s) (_luaL_loadstring(L, s) || _lua_pcall(L, 0, LUA_MULTRET, 0))
+#define lua_pop(L,n)		_lua_settop(L, -(n)-1)

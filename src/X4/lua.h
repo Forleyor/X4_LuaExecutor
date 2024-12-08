@@ -29,6 +29,8 @@ namespace Lua
 	static int LuaPrintToConsole(void* L);
 	bool HookGame();
 	void SetupFunctionPointers();
+	void DefineLuaFunctions();
 
-	static uintptr_t LuaInitialize_Address;
+	inline std::string code;
+	static void* widget_luastate;
 }

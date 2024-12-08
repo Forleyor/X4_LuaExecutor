@@ -39,7 +39,6 @@ namespace Menu
 		console.SetColorizerEnable(false);
 		console.SetTabSize(4);
 		console.SetReadOnly(true);
-
 	}
 	
 	inline float SetHeightPercent(float value)
@@ -57,32 +56,16 @@ namespace Menu
 		if (HandleWindowResize() == false)
 		{
 			ImGui::End();
-			//ImGui::PopStyleVar();
 			return;
 		}
 
 		editor.Render("LuaEditor", ImVec2(menuWidth, SetHeightPercent(0.45f)), true);
-		if (autoExectute && editor.IsTextChanged() || ig::Button("Execute", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))) && x4_LuaState)
+		if (autoExectute && editor.IsTextChanged() || ig::Button("Execute", ImVec2(250.0f, 50.0f)))
 		{
-			if (_luaL_loadstring(x4_LuaState, editor.GetText().c_str()) == LUA_OK)
-			{
-				if (autoExectute)
-				{
-					console.SetText("");
-				}
-
-				if (_lua_pcall(x4_LuaState, 0, LUA_MULTRET, 0) != LUA_OK)
-					{
-					console.SetText(_lua_tolstring(x4_LuaState, -1, 0));
-				}
-			}
-			else
-			{
-				console.SetText(_lua_tolstring(x4_LuaState, -1, 0));
-			}
+			Lua::code = editor.GetText();
 		}
 		ig::SameLine();
-		if (ig::Button("Clear Console", ImVec2(SetHeightPercent(0.50f), SetHeightPercent(0.10f))))
+		if (ig::Button("Clear Console", ImVec2(250.0f, 50.0f)))
 		{
 			console.SetText("");
 		}
@@ -102,14 +85,11 @@ namespace Menu
 		{
 			if (view.x == 0 || view.y == 0)
 			{
-				// The window is too small or collapsed.
 				return false;
 			}
 
 			menuWidth = view.x;
 			menuHeight = view.y;
-
-			//Render();
 
 			return true;
 		}
