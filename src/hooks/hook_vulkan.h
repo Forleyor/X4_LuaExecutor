@@ -3,6 +3,6 @@
 #include <Windows.h>
 
 namespace VK {
-	void Hook(HWND hwnd);
-	void Unhook( );
+    void Hook(HWND hwnd);
+    void Unhook( );
 }

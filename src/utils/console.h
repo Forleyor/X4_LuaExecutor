@@ -2,6 +2,6 @@
 #include <cstdio>
 
 namespace Console {
-	void Alloc();
-	void Free();
+    void Alloc();
+    void Free();
 }

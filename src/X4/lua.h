@@ -26,11 +26,11 @@ inline __lua_setfield _lua_setfield;
 
 namespace Lua
 {
-	static int LuaPrintToConsole(void* L);
-	bool HookGame();
-	void SetupFunctionPointers();
-	void DefineLuaFunctions();
+    static int LuaPrintToConsole(void* L);
+    bool HookGame();
+    void SetupFunctionPointers();
+    void DefineLuaFunctions();
 
-	inline std::string code;
-	static void* widget_luastate;
+    inline std::string code;
+    static void* widget_luastate;
 }

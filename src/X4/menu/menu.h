@@ -9,13 +9,13 @@ namespace Menu {
     bool HandleWindowResize();
 
     inline bool bShowMenu = false;
-	inline bool updateConsole = false;
+    inline bool updateConsole = false;
     inline bool autoExectute = false;
     inline TextEditor editor;
-	inline TextEditor console;
-	inline float gameWidth;
+    inline TextEditor console;
+    inline float gameWidth;
     inline float gameHeight;
     inline float menuWidth;
-	inline float menuHeight;
-	inline float buttonHeight;
+    inline float menuHeight;
+    inline float buttonHeight;
 } // namespace Menu

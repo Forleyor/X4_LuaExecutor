@@ -17,41 +17,41 @@ DWORD WINAPI OnProcessAttach(LPVOID lpParam);
 DWORD WINAPI OnProcessDetach(LPVOID lpParam);
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
-	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-		DisableThreadLibraryCalls(hModule);
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+        DisableThreadLibraryCalls(hModule);
 
-		HANDLE hHandle = CreateThread(NULL, 0, OnProcessAttach, hModule, 0, NULL);
-		if (hHandle != NULL) {
-			CloseHandle(hHandle);
-		}
-	}
-	else if (ul_reason_for_call == DLL_PROCESS_DETACH && !lpReserved) {
-		OnProcessDetach(NULL);
-	}
+        HANDLE hHandle = CreateThread(NULL, 0, OnProcessAttach, hModule, 0, NULL);
+        if (hHandle != NULL) {
+            CloseHandle(hHandle);
+        }
+    }
+    else if (ul_reason_for_call == DLL_PROCESS_DETACH && !lpReserved) {
+        OnProcessDetach(NULL);
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 DWORD WINAPI OnProcessAttach(LPVOID lpParam) {
-	Console::Alloc();
-	MH_Initialize();
-	H::Init();
+    Console::Alloc();
+    MH_Initialize();
+    H::Init();
 
-	if (!Lua::HookGame())
-	{
-		printf("Failed to hook game process, LuaExecutor.dll will unload\n");
-		std::cin.get();
-		Utils::UnloadDLL();
-	}
+    if (!Lua::HookGame())
+    {
+        printf("Failed to hook game process, LuaExecutor.dll will unload\n");
+        std::cin.get();
+        Utils::UnloadDLL();
+    }
 
-	return 0;
+    return 0;
 }
 
 DWORD WINAPI OnProcessDetach(LPVOID lpParam) {
-	H::Free();
-	MH_Uninitialize();
+    H::Free();
+    MH_Uninitialize();
 
-	Console::Free();
+    Console::Free();
 
-	return 0;
+    return 0;
 }

@@ -2,10 +2,10 @@
 #include <Windows.h>
 
 namespace Hooks {
-	void Init();
-	void Free();
-	
-	inline bool bShuttingDown;
+    void Init();
+    void Free();
+    
+    inline bool bShuttingDown;
 }
 
 namespace H = Hooks;
