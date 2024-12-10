@@ -1,5 +1,8 @@
 #include "lua.h"
 
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 #include <psapi.h>
 
 #include "MinHook.h"
@@ -25,8 +28,6 @@ namespace Lua
         {
             if (widget_luastate == nullptr)
             {
-                SetupFunctionPointers();
-
                 widget_luastate = pThis->luaState;
                 printf("widget_luastate: %p\n", widget_luastate);
             }
@@ -116,22 +117,27 @@ namespace Lua
             printf("Hooked LuaInitialize_Address\n");
         }
 
-        uintptr_t luaGettop_Address = (uintptr_t)GetProcAddress(GetModuleHandleA("lua51_64.dll"), "lua_gettop");
-        if (luaGettop_Address)
+        HMODULE luaDLL = GetModuleHandleA("lua51_64.dll");
+        if (luaDLL)
         {
-            if (MH_CreateHook((void*)luaGettop_Address, (void*)hook_LuaGettop, (void**)&orig_LuaGettop) != MH_OK)
-                return false;
-            if (MH_EnableHook((void*)luaGettop_Address) != MH_OK)
-                return false;
-            printf("Hooked lua_gettop\n");
+            uintptr_t luaGettop_Address = (uintptr_t)GetProcAddress(luaDLL, "lua_gettop");
+            if (luaGettop_Address)
+            {
+                if (MH_CreateHook((void*)luaGettop_Address, (void*)hook_LuaGettop, (void**)&orig_LuaGettop) != MH_OK)
+                    return false;
+                if (MH_EnableHook((void*)luaGettop_Address) != MH_OK)
+                    return false;
+                printf("Hooked lua_gettop\n");
+            }
+
+            SetupFunctionPointers(luaDLL);
         }
 
         return true;
     }
 
-    static void SetupFunctionPointers()
+    static void SetupFunctionPointers(HMODULE luaDLL)
     {
-        HMODULE luaDLL = GetModuleHandleA("lua51_64.dll");
         _lua_gettop = (__lua_gettop)GetProcAddress(luaDLL, "lua_gettop");
         _lua_settop = (__lua_settop)GetProcAddress(luaDLL, "lua_settop");
         _lua_newthread = (__lua_newthread)GetProcAddress(luaDLL, "lua_newthread");
@@ -148,41 +154,31 @@ namespace Lua
 
     static void DefineLuaFunctions()
     {
-        const char* LogTable = R"(
-            function LogTable(itable)
-                local str = "Table\n"
-                local line
+        std::filesystem::path scriptPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Utils.lua";
+        std::ifstream luaFile(scriptPath, std::ios::in);
+        if (luaFile.fail())
+        {
+            printf("Failed to open %s\nPredefined functions wont exist.\n", scriptPath.string().c_str());
+            return;
+        }
 
-                for k,v in pairs(itable) do
-                    line = "["..k.."] = "..tostring(v).." ("..type(v)..")\n"
-                    if #line + #str >= 8192 then
-                        DebugError(str)
-                        str = line
-                    else
-                        str = str .. line
-                    end
-                end
-                DebugError(str)
-            end
-        )";
+        std::string luaCode;
+        std::string line;
+        while (getline(luaFile, line))
+        {
+            luaCode += line.c_str();
+            luaCode += "\n";
+        }
 
-        const char* PrintTable = R"(
-            function PrintTable(itable)
-                local str = "Table:\n"
-                local line
+        luaFile.close();
 
-                for k,v in pairs(itable) do
-                    line = "["..k.."] = "..tostring(v).." ("..type(v)..")\n"
-                    str = str .. line
-                end
-                print(str)
-            end
-        )";
+        printf("Lua code string is\n\n%s\n\n", luaCode.c_str());
 
         printf("\nDefining lua helper functions\n");
-        if (luaL_dostring(widget_luastate, LogTable) == LUA_OK)
-            printf("Defined function LogTable(itable) -> Logs table to X4 Debug Log\n");
-        if (luaL_dostring(widget_luastate, PrintTable) == LUA_OK)
-            printf("Defined function PrintTable(itable) -> Prints table to Lua Executors console\n");
+        if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)
+            printf("Defined functions from Utils.lua successfully\n");
+        else
+            printf("%s", _lua_tolstring(widget_luastate, -1, 0));
+            
     }
 }

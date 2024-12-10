@@ -28,7 +28,7 @@ namespace Lua
 {
     static int LuaPrintToConsole(void* L);
     bool HookGame();
-    void SetupFunctionPointers();
+    void SetupFunctionPointers(HMODULE luaDLL);
     void DefineLuaFunctions();
 
     inline std::string code;

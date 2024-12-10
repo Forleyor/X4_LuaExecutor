@@ -8,10 +8,6 @@ enum RenderingBackend_t {
 };
 
 namespace Utils {
-    void SetRenderingBackend(RenderingBackend_t eRenderingBackend);
-    RenderingBackend_t GetRenderingBackend( );
-    const char* RenderingBackendToStr( );
-
     HWND GetProcessWindow( );
     void UnloadDLL( );
     
