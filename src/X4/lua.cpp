@@ -172,7 +172,7 @@ namespace Lua
 
         luaFile.close();
 
-        printf("Lua code string is\n\n%s\n\n", luaCode.c_str());
+        //printf("Lua code string is\n\n%s\n\n", luaCode.c_str());
 
         printf("\nDefining lua helper functions\n");
         if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)

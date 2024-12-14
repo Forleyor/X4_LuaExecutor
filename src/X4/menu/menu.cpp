@@ -1,4 +1,4 @@
-#include <iostream>
+#include <filesystem>
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -7,12 +7,10 @@
 #include "../../utils/utils.h"
 #include "../lua.h"
 
-namespace ig = ImGui;
-
 namespace Menu
 {
     void InitializeContext(HWND hwnd) {
-        if (ig::GetCurrentContext())
+        if (ImGui::GetCurrentContext())
             return;
 
         RECT window;
@@ -23,12 +21,16 @@ namespace Menu
         menuWidth = gameWidth / 2;
         menuHeight = gameHeight / 2;
 
-        ig::CreateContext();
+        ImGui::CreateContext();
         ImGui_ImplWin32_Init(hwnd);
 
         ImGuiIO& io = ImGui::GetIO();
         io.IniFilename = io.LogFilename = nullptr;
         io.FontAllowUserScaling = true;
+        
+        ImFontConfig font_config;
+        std::filesystem::path fontPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Fonts" / "CascadiaMono.ttf";
+        io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 24, &font_config);
 
         editor = TextEditor();
         editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
@@ -50,31 +52,31 @@ namespace Menu
         if (!bShowMenu)
             return;
         
-        ig::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_FirstUseEver);
-        ig::Begin("Lua Executor");
+        ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Lua Executor");
 
         if (HandleWindowResize() == false)
         {
             ImGui::End();
             return;
-        }
+    }
 
         editor.Render("LuaEditor", ImVec2(menuWidth, SetHeightPercent(0.45f)), true);
-        if (autoExectute && editor.IsTextChanged() || ig::Button("Execute", ImVec2(250.0f, 50.0f)))
+        if (autoExectute && editor.IsTextChanged() || ImGui::Button("Execute", ImVec2(250.0f, 50.0f)))
         {
             Lua::code = editor.GetText();
         }
-        ig::SameLine();
-        if (ig::Button("Clear Console", ImVec2(250.0f, 50.0f)))
+        ImGui::SameLine();
+        if (ImGui::Button("Clear Console", ImVec2(250.0f, 50.0f)))
         {
             console.SetText("");
         }
-        ig::SameLine();
-        ig::Checkbox("Auto Execute", &autoExectute);
+        ImGui::SameLine();
+        ImGui::Checkbox("Auto Execute", &autoExectute);
 
         console.Render("Console", ImVec2(menuWidth, SetHeightPercent(0.45f)), true);
 
-        ig::End();
+        ImGui::End();
     }
 
     bool HandleWindowResize()

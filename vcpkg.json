@@ -2,10 +2,11 @@
   "dependencies": [
     {
       "name": "imgui",
-      "features": [
-        "win32-binding",
-        "vulkan-binding"
-      ]
+        "features": [
+            "docking-experimental",
+            "win32-binding",
+            "vulkan-binding"
+        ]
     },
     "minhook"
   ]
