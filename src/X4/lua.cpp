@@ -178,7 +178,6 @@ namespace Lua
         if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)
             printf("Defined functions from Utils.lua successfully\n");
         else
-            printf("%s", _lua_tolstring(widget_luastate, -1, 0));
-            
+            printf("Defining functions from Utils.lua failed:\n%s\n", _lua_tolstring(widget_luastate, -1, 0));
     }
 }
