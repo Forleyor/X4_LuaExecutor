@@ -9,7 +9,6 @@
 #include "defs.h"
 #include "../utils/mem.h"
 
-
 namespace Lua
 {
     struct LuaEngine
@@ -18,6 +17,43 @@ namespace Lua
         void* luaState;
         std::string luaString; // Used to find the correct state via unique string
     };
+
+    void doLuaExector(void *L)
+    {
+        if (_luaL_loadstring(widget_luastate, code.c_str()) == LUA_OK)
+        {
+            if (code.find("PrintTable") != std::string::npos)
+                Menu::console.SetText("");
+            if (Menu::autoExectute)
+                Menu::console.SetText("");;
+
+            code.clear();
+            if (_lua_pcall(widget_luastate, 0, LUA_MULTRET, 0) != LUA_OK)
+            {
+                Menu::console.SetText(_lua_tolstring(widget_luastate, -1, 0));
+            }
+        }
+        else
+        {
+            code.clear();
+            Menu::console.SetText(_lua_tolstring(widget_luastate, -1, 0));
+        }
+    }
+
+    void doTableViewer(void* L)
+    {
+        lua_getglobal(L, "GetTableData");
+        if (lua_isfunction(L, -1))
+        {
+            _lua_pushvalue(L, LUA_GLOBALSINDEX);
+            if (lua_istable(L, -1))
+            {
+                _lua_pcall(L, 1, 1, 0);
+                std::string result = _lua_tolstring(L, -1, nullptr);
+                Menu::ParseTable(result, true);
+            }
+        }
+    }
 
     LuaEngine* (*orig_LuaInitialize)(LuaEngine *pThis, int a2);
     LuaEngine* hook_LuaInitialize(LuaEngine *pThis, int a2)
@@ -40,7 +76,6 @@ namespace Lua
             DefineLuaFunctions();
             _lua_pushcclosure(widget_luastate, LuaPrintToConsole, 0);
             _lua_setfield(widget_luastate, LUA_GLOBALSINDEX, "print");
-            printf("\n==============================================================\n\n");
         }
 
         return pThis;
@@ -50,25 +85,20 @@ namespace Lua
     int hook_LuaGettop(void* L)
     {
         int result = orig_LuaGettop(L);
-        if (!code.empty() && widget_luastate == L)
+        if (widget_luastate == L)
         {
-            if (_luaL_loadstring(widget_luastate, code.c_str()) == LUA_OK)
+            switch (Menu::mode)
             {
-                if (code.find("PrintTable") != std::string::npos)
-                    Menu::console.SetText("");
-                if (Menu::autoExectute)
-                    Menu::console.SetText("");;
-
-                code.clear();
-                if (_lua_pcall(widget_luastate, 0, LUA_MULTRET, 0) != LUA_OK)
-                {
-                    Menu::console.SetText(_lua_tolstring(widget_luastate, -1, 0));
-                }
-            }
-            else
-            {
-                code.clear();
-                Menu::console.SetText(_lua_tolstring(widget_luastate, -1, 0));
+            case Menu::Mode::LuaExecutor:
+                if (!Lua::code.empty())
+                    doLuaExector(L);
+                break;
+            case Menu::Mode::TableViewer:
+                if (Menu::processTable)
+                    doTableViewer(L);
+                break;
+            default:
+                break;
             }
         }
         return result;
@@ -148,6 +178,10 @@ namespace Lua
         _lua_tolstring = (__lua_tolstring)GetProcAddress(luaDLL, "lua_tolstring");
         _lua_pushcclosure = (__lua_pushcclosure)GetProcAddress(luaDLL, "lua_pushcclosure");
         _lua_setfield = (__lua_setfield)GetProcAddress(luaDLL, "lua_setfield");
+        _lua_pushvalue = (__lua_pushvalue)GetProcAddress(luaDLL, "lua_pushvalue");
+        _lua_type = (__lua_type)GetProcAddress(luaDLL, "lua_type");
+        _lua_pushstring = (__lua_pushstring)GetProcAddress(luaDLL, "lua_pushstring");
+        _lua_gettable = (__lua_gettable)GetProcAddress(luaDLL, "lua_gettable");
 
         printf("SetupFunctionPointers done\n");
     }
@@ -172,12 +206,28 @@ namespace Lua
 
         luaFile.close();
 
-        //printf("Lua code string is\n\n%s\n\n", luaCode.c_str());
-
         printf("\nDefining lua helper functions\n");
         if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)
             printf("Defined functions from Utils.lua successfully\n");
         else
             printf("Defining functions from Utils.lua failed:\n%s\n", _lua_tolstring(widget_luastate, -1, 0));
+
+        const char* GetTableData = R"(
+            function GetTableData(itable)
+                local str = ""
+
+                for k,v in pairs(itable) do
+                    line = k .. " " .. tostring(v) .. "\n"
+                    str = str .. line
+                end
+                return str
+            end
+        )";
+
+        printf("\nDefining GetTableData\n");
+        if (luaL_dostring(widget_luastate, GetTableData) == LUA_OK)
+            printf("Defined functions from GetTableData successfully\n");
+        else
+            printf("Defining functions from GetTableData failed:\n%s\n", _lua_tolstring(widget_luastate, -1, 0));
     }
 }

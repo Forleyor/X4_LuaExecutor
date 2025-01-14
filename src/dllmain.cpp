@@ -40,7 +40,6 @@ DWORD WINAPI OnProcessAttach(LPVOID lpParam) {
     if (!Lua::HookGame())
     {
         printf("Failed to hook game process, LuaExecutor.dll will unload\n");
-        std::cin.get();
         Utils::UnloadDLL();
     }
 

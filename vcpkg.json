@@ -8,6 +8,12 @@
             "vulkan-binding"
         ]
     },
+    {
+        "name": "inih",
+        "features": [
+            "cpp"
+        ]
+    },
     "minhook"
   ]
 }

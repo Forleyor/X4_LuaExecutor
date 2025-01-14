@@ -44,13 +44,6 @@ static LRESULT WINAPI WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             Menu::bShowMenu = !Menu::bShowMenu;
             return 0;
         }
-        else if (wParam == VK_HOME)
-        {
-            HANDLE hHandle = CreateThread(NULL, 0, ReinitializeGraphicalHooks, NULL, 0, NULL);
-            if (hHandle != NULL)
-                CloseHandle(hHandle);
-            return 0;
-        }
     } else if (uMsg == WM_DESTROY)
     {
         HANDLE hHandle = CreateThread(NULL, 0, ReinitializeGraphicalHooks, hWnd, 0, NULL);
