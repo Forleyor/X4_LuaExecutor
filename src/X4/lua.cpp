@@ -188,7 +188,7 @@ namespace Lua
 
     static void DefineLuaFunctions()
     {
-        std::filesystem::path scriptPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Utils.lua";
+        std::filesystem::path scriptPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Scripts" / "Utils.lua";
         std::ifstream luaFile(scriptPath, std::ios::in);
         if (luaFile.fail())
         {
@@ -200,7 +200,7 @@ namespace Lua
         std::string line;
         while (getline(luaFile, line))
         {
-            luaCode += line.c_str();
+            luaCode += line;
             luaCode += "\n";
         }
 
