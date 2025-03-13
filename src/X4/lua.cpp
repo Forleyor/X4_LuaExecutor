@@ -15,7 +15,7 @@ namespace Lua
     {
         void* vTable;
         void* luaState;
-        std::string luaString; // Used to find the correct state via unique string
+        char* luaString; // Used to find the correct state via unique string
     };
 
     void doLuaExector(void *L)
@@ -60,7 +60,7 @@ namespace Lua
     {
         pThis = orig_LuaInitialize(pThis, a2);
 
-        if (strcmp(pThis->luaString.c_str(), "ui/widget/Lua/") == 0)
+        if (strcmp(pThis->luaString, "ui/widget/Lua/") == 0)
         {
             if (widget_luastate == nullptr)
             {
