@@ -223,13 +223,15 @@ static void CreateRenderTarget(VkDevice device, VkSwapchainKHR swapchain) {
 
     // Create Framebuffer
     {
-        VkImageView attachment[1];
-        VkFramebufferCreateInfo info = { };
-        info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        info.renderPass = g_RenderPass;
-        info.attachmentCount = 1;
-        info.pAttachments = attachment;
-        info.layers = 1;
+		VkImageView attachment[1];
+		VkFramebufferCreateInfo info = { };
+		info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		info.renderPass = g_RenderPass;
+		info.attachmentCount = 1;
+		info.pAttachments = attachment;
+		info.width = g_ImageExtent.width;
+		info.height = g_ImageExtent.height;
+		info.layers = 1;
 
         for (uint32_t i = 0; i < uImageCount; ++i) {
             ImGui_ImplVulkanH_Frame* fd = &g_Frames[i];
@@ -416,6 +418,15 @@ static void RenderImGui_Vulkan(VkQueue queue, const VkPresentInfoKHR* pPresentIn
     if (!g_Device || H::bShuttingDown)
         return;
 
+	if (g_ImageExtent.width == 0 || g_ImageExtent.height == 0) {
+		// We don't know the window size the first time so we just query the window handle.
+		RECT rect{ };
+		GetClientRect(g_Hwnd, &rect);
+
+		g_ImageExtent.width = rect.right - rect.left;
+		g_ImageExtent.height = rect.bottom - rect.top;
+	}
+
     VkQueue graphicQueue = VK_NULL_HANDLE;
     const bool queueSupportsGraphic = DoesQueueSupportGraphic(queue, &graphicQueue);
 
@@ -496,47 +507,47 @@ static void RenderImGui_Vulkan(VkQueue queue, const VkPresentInfoKHR* pPresentIn
         if (waitSemaphoresCount == 0 && !queueSupportsGraphic) {
             constexpr VkPipelineStageFlags stages_wait = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
             {
-                VkSubmitInfo info = { };
-                info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+				VkSubmitInfo info = { };
+				info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-                info.pWaitDstStageMask = &stages_wait;
+				info.pWaitDstStageMask = &stages_wait;
 
-                info.signalSemaphoreCount = 1;
-                info.pSignalSemaphores = &fsd->RenderCompleteSemaphore;
+				info.signalSemaphoreCount = 1;
+				info.pSignalSemaphores = &fsd->RenderCompleteSemaphore;
 
-                vkQueueSubmit(queue, 1, &info, VK_NULL_HANDLE);
+				vkQueueSubmit(queue, 1, &info, VK_NULL_HANDLE);
             }
             {
-                VkSubmitInfo info = { };
-                info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-                info.commandBufferCount = 1;
-                info.pCommandBuffers = &fd->CommandBuffer;
+				VkSubmitInfo info = { };
+				info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+				info.commandBufferCount = 1;
+				info.pCommandBuffers = &fd->CommandBuffer;
 
-                info.pWaitDstStageMask = &stages_wait;
-                info.waitSemaphoreCount = 1;
-                info.pWaitSemaphores = &fsd->RenderCompleteSemaphore;
+				info.pWaitDstStageMask = &stages_wait;
+				info.waitSemaphoreCount = 1;
+				info.pWaitSemaphores = &fsd->RenderCompleteSemaphore;
 
-                info.signalSemaphoreCount = 1;
-                info.pSignalSemaphores = &fsd->ImageAcquiredSemaphore;
+				info.signalSemaphoreCount = 1;
+				info.pSignalSemaphores = &fsd->ImageAcquiredSemaphore;
 
-                vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
+				vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
             }
         } else {
-            std::vector<VkPipelineStageFlags> stages_wait(waitSemaphoresCount, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+			std::vector<VkPipelineStageFlags> stages_wait(waitSemaphoresCount, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
-            VkSubmitInfo info = { };
-            info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            info.commandBufferCount = 1;
-            info.pCommandBuffers = &fd->CommandBuffer;
+			VkSubmitInfo info = { };
+			info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			info.commandBufferCount = 1;
+			info.pCommandBuffers = &fd->CommandBuffer;
 
-            info.pWaitDstStageMask = stages_wait.data( );
-            info.waitSemaphoreCount = waitSemaphoresCount;
-            info.pWaitSemaphores = pPresentInfo->pWaitSemaphores;
+			info.pWaitDstStageMask = stages_wait.data();
+			info.waitSemaphoreCount = waitSemaphoresCount;
+			info.pWaitSemaphores = pPresentInfo->pWaitSemaphores;
 
-            info.signalSemaphoreCount = 1;
-            info.pSignalSemaphores = &fsd->ImageAcquiredSemaphore;
+			info.signalSemaphoreCount = waitSemaphoresCount;
+			info.pSignalSemaphores = pPresentInfo->pWaitSemaphores;
 
-            vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
+			vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
         }
     }
 }

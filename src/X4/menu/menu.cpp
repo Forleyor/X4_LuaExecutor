@@ -140,7 +140,7 @@ namespace Menu
     void ShowTableViewer()
     {
         std::string entryText;
-        for (auto table : luaTables)
+        for (const auto& table : luaTables)
         {
             for (auto entry : table.entries)
             {
@@ -165,7 +165,6 @@ namespace Menu
         if (!bShowMenu)
             return;
         
-
         ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_FirstUseEver);
         ImGui::Begin("Lua Tools");
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
@@ -187,12 +186,12 @@ namespace Menu
                 ImGui::EndTabItem();
 
             }
-            if (ImGui::BeginTabItem("Table Viewer"))
-            {
-                mode = TableViewer;
-                ShowTableViewer();
-                ImGui::EndTabItem();
-            }
+            //if (ImGui::BeginTabItem("Table Viewer"))
+            //{
+            //    mode = TableViewer;
+            //    ShowTableViewer();
+            //    ImGui::EndTabItem();
+            //}
             ImGui::EndTabBar();
         }
 
