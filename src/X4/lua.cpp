@@ -188,29 +188,36 @@ namespace Lua
 
     static void DefineLuaFunctions()
     {
-        std::filesystem::path scriptPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Scripts" / "Utils.lua";
-        std::ifstream luaFile(scriptPath, std::ios::in);
-        if (luaFile.fail())
+        std::filesystem::path scriptPath = std::filesystem::current_path() / "plugins" / "LuaExecutor" / "Scripts";
+        printf("\nLoading lua files in: %s\n", scriptPath.string().c_str());
+
+        for (const auto& file : std::filesystem::directory_iterator(scriptPath))
         {
-            printf("Failed to open %s\nPredefined functions wont exist.\n", scriptPath.string().c_str());
-            return;
+            if (file.path().extension().compare(".lua") != 0)
+                continue;
+
+            std::ifstream luaFile(file.path().string(), std::ios::in);
+            if (luaFile.fail())
+            {
+                printf("Failed to open %s\nPredefined functions wont exist.\n", file.path().filename().string().c_str());
+                continue;
+            }
+
+            std::string luaCode;
+            std::string line;
+            while (getline(luaFile, line))
+            {
+                luaCode += line;
+                luaCode += "\n";
+            }
+
+            luaFile.close();
+
+            if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)
+                printf("Loaded %s successfully\n", file.path().filename().string().c_str());
+            else
+                printf("Failed to load %s\n", file.path().filename().string().c_str(), _lua_tolstring(widget_luastate, -1, 0));
         }
-
-        std::string luaCode;
-        std::string line;
-        while (getline(luaFile, line))
-        {
-            luaCode += line;
-            luaCode += "\n";
-        }
-
-        luaFile.close();
-
-        printf("\nDefining lua helper functions\n");
-        if (luaL_dostring(widget_luastate, luaCode.c_str()) == LUA_OK)
-            printf("Defined functions from Utils.lua successfully\n");
-        else
-            printf("Defining functions from Utils.lua failed:\n%s\n", _lua_tolstring(widget_luastate, -1, 0));
 
         const char* GetTableData = R"(
             function GetTableData(itable)
@@ -222,7 +229,7 @@ namespace Lua
                 end
                 return str
             end
-        )";
+            )";
 
         printf("\nDefining GetTableData\n");
         if (luaL_dostring(widget_luastate, GetTableData) == LUA_OK)
