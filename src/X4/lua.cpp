@@ -60,7 +60,7 @@ namespace Lua
     {
         pThis = orig_LuaInitialize(pThis, a2);
 
-        if (strcmp(pThis->luaString, "ui/widget/Lua/") == 0)
+        if (strcmp(pThis->luaString, "ui/widget/Lua/") == 0 || strcmp(pThis->luaString, "ui/widget/lua/") == 0)
         {
             if (widget_luastate == nullptr)
             {
