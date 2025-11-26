@@ -80,15 +80,22 @@ function GetMenu(name)
 	end
 end
 
-local function PrintComponentData(component, ...)
+function PrintComponentData(component, ...)
     local args = {...}
     local properties = {}
+
     for _,v in pairs(args) do
         properties[v] = GetComponentData(component, v)
     end
-    print("Component Data:")
 
-    for key, value in pairs(properties) do
-       print(string.format("  %s: %s", key, value))
+    local keys = {}
+    for key in pairs(properties) do
+        table.insert(keys, key)
+    end
+    table.sort(keys)
+
+    print("Component Data:")
+    for _, key in pairs(keys) do
+       print(string.format("  %s: %s", key, properties[key]))
     end
 end
