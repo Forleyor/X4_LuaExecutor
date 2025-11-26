@@ -56,3 +56,39 @@ function PrintTable(itable, filter)
     end
     print(str)
 end
+
+function PrintMenus()
+	print("Menus:")
+	for i, menu in ipairs(Menus) do
+		print(string.format("  Menu[%d]: %s", i, menu.name))
+	end
+end
+
+function FindMenu(name)
+	for i, menu in ipairs(Menus) do
+		if menu.name == name then
+			print(string.format("Menu[%d]: %s", i, menu.name))
+		end
+	end
+end
+
+function GetMenu(name)
+	for i, menu in ipairs(Menus) do
+		if menu.name == name then
+			return menu
+		end
+	end
+end
+
+local function PrintComponentData(component, ...)
+    local args = {...}
+    local properties = {}
+    for _,v in pairs(args) do
+        properties[v] = GetComponentData(component, v)
+    end
+    print("Component Data:")
+
+    for key, value in pairs(properties) do
+       print(string.format("  %s: %s", key, value))
+    end
+end
